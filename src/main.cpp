@@ -62,6 +62,12 @@ void parsear(GtkWidget *btn, gpointer data)
   AppWidgets *widgets = (AppWidgets *)data;
   errores.clear();
 
+  if (listaTokens.empty()) {
+	GtkTextBuffer *bufOut = gtk_text_view_get_buffer(GTK_TEXT_VIEW(widgets->OutputText));
+	gtk_text_buffer_set_text(bufOut, "Error: Se debe de ejecutar el Analizador Lexico", -1);
+	return;
+  }
+
   Parser parser(listaTokens);
   arbol = parser.parsearPrograma();
   errores = parser.errores;

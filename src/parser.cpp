@@ -9,6 +9,10 @@ Parser::Parser(vector<Token> t) : tokens(t), posicion(0) {}
 // retorna el token en posicion
 Token Parser::Actual()
 {
+  if (tokens.empty()) {
+	return {FIN, "EOF", 0, 0};
+  }
+
   if (posicion >= tokens.size())
   {
     return tokens.back(); // regresa el último token (FIN)
@@ -241,7 +245,7 @@ Nodo *Parser::parsearExpresion()
   Nodo *izq = nullptr;
   // cout << "tipo: " << Actual().tipo << endl;
   if (Actual().tipo == ENTERO || Actual().tipo == DECIMAL ||
-      Actual().tipo == ID || Actual().tipo == CADENA)
+      Actual().tipo == ID || Actual().tipo == CADENA || Actual().tipo == KW_VERDADERO || Actual().tipo == KW_FALSO)
   {
 
     //========= Inicio contendio semantica ======
@@ -295,10 +299,20 @@ Nodo *Parser::parsearExpresion()
     Nodo *der = parsearExpresion();
     // x=2+10 :  +
     // der =
+
+	string tIzq = (izq->tipo == "ID") ? tablaSimbolos.getType(izq->valor) : izq->tipo;
+	string tDer = (der->tipo == "ID") ? tablaSimbolos.getType(der->valor) : der->tipo;
+
+	String tRes = tablaSimbolos.evaluarOperacion(tIzq, operador.lexema, tDer);
+
+	if (tRes == "error") {
+		errores.push_back("Error Semantico: Operacion matematica invalida en linea: " + to_string (operador.linea));
     return new Nodo(operador.lexema, "", izq, der);
   }
   else if (Actual().tipo == PAREN_CIERRA)
   {
+
+
     return izq;
   }
   else
@@ -372,6 +386,13 @@ Nodo *Parser::parsearCondicion()
   {
     Token operador = nextToken(); //+ avanzo valo
     Nodo *der = parsearExpresion();
+
+	string tIzq = (izq->tipo == "ID" ) ? tablaSimbolos.getType(izq->valor) : izq->tipo;
+	string tDer = (der->tipo == "ID" ? tablaSimbolos.getType(der->valor) : der->tipo;
+
+  if (tablaSimbolos.evaluarOperacion(tIzq, operador.lexema, tDer == "error") {
+	errores.push_back("Error Semantico: Tipos incompatibles en la condicion. Linea: " + to_string(operador.linea));
+  }
     return new Nodo("CONDICION", operador.lexema, izq, der);
   }
   else
@@ -470,10 +491,11 @@ Nodo *Parser::parsearSi()
   {
     nextToken();
     Nodo *bloque = parsearBloque();
-    bloque->tipo = "SINO_BLOQUE";
-
-    si_parsed->hijos.push_back(bloque);
-  }
+	if (bloque =! nullptr){
+    	bloque->tipo = "SINO_BLOQUE";
+    	si_parsed->hijos.push_back(bloque);
+ 	 }
+   }
 
   return si_parsed;
 }

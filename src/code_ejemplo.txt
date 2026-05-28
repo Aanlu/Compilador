@@ -2,8 +2,8 @@ cadena nombre
 entero edad
 nombre = "luis"
 edad = 21
-seguir = verdadero
-mientras(seguir != false){
+bool seguir = verdadero
+mientras(seguir != falso){
   si(edad>18){
     Imprimir("Eres mayor de edad")
   }de_lo_contrario{
