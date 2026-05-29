@@ -367,6 +367,16 @@ Nodo *Parser::parsearCondicion()
   }
   else
   {
+    // ========= Inicio contenido semántica ======
+    if (Actual().tipo == ID)
+    {
+      if (!tablaSimbolos.existe(Actual().lexema))
+      {
+        errores.push_back("Error Semantico: La variable '" + Actual().lexema + "' no ha sido declarada. Linea: " + to_string(Actual().linea));
+      }
+    }
+    // ========== fin contenido de semántica =======
+
     string tipoNodo;
     if (Actual().tipo == ENTERO)
       tipoNodo = "ENTERO"; // ENUM toString(enum)
